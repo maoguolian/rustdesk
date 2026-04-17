@@ -9,7 +9,7 @@ plugins {
 }
 
 ext {
-    cargoExecutable = 'C:/Users/maogu/.cargo/bin/cargo.exe'
+  cargoExecutable = System.properties['os.name'].toLowerCase().contains('windows') ? 'cargo.exe' : 'cargo'
 }
 
 def keystoreProperties = new Properties()
