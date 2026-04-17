@@ -28,11 +28,25 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
-subprojects {
+susubprojects {
     afterEvaluate { project ->
-        if (project.hasProperty('android')) {
-            // 自动生成一个 namespace，避免插件未声明导致构建失败
-            project.android.namespace = project.group.toString().replace('.', '_') + '_' + project.name
+        if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
+            if (project.android.namespace == null) {
+                def manifestFile = project.file('src/main/AndroidManifest.xml')
+                if (manifestFile.exists()) {
+                    def manifest = new XmlSlurper().parse(manifestFile)
+                    def pkg = manifest.@package.text()
+                    if (pkg) {
+                        project.android.namespace = pkg
+                        println "Auto-set namespace for ${project.name}: $pkg"
+                    } else {
+                        project.android.namespace = "com.example.${project.name}"
+                    }
+                } else {
+                    project.android.namespace = "com.example.${project.name}"
+                }
+            }
         }
     }
+}
 }
