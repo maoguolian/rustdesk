@@ -27,3 +27,12 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            // 自动生成一个 namespace，避免插件未声明导致构建失败
+            project.android.namespace = project.group.toString().replace('.', '_') + '_' + project.name
+        }
+    }
+}
